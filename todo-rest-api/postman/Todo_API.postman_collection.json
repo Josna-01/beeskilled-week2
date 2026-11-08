@@ -1,0 +1,235 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-111122223333",
+    "name": "Assignment 1 - To-Do List REST API",
+    "description": "Postman Collection for Week 2 Assignment 1: To-Do List REST API built with Express and MongoDB Mongoose.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        },
+        "description": "Verifies that the API server is up and running."
+      }
+    },
+    {
+      "name": "1. Create Task (Valid)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.success && response.data && response.data._id) {",
+              "    pm.collectionVariables.set('taskId', response.data._id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Complete Week 2 Backend Assignment\",\n  \"description\": \"Build REST API, User Auth API, and Notes App with Mongoose\",\n  \"status\": \"pending\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks"]
+        },
+        "description": "Creates a new task in MongoDB."
+      }
+    },
+    {
+      "name": "2. Create Task (Validation Error - Missing Title)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Task with no title\",\n  \"status\": \"pending\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks"]
+        },
+        "description": "Tests validation error when required title field is omitted."
+      }
+    },
+    {
+      "name": "3. Create Task (Validation Error - Invalid Status)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Invalid Status Task\",\n  \"status\": \"in-progress\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks"]
+        },
+        "description": "Tests validation error when status is not 'pending' or 'completed'."
+      }
+    },
+    {
+      "name": "4. Get All Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks"]
+        },
+        "description": "Retrieves all tasks stored in MongoDB, sorted by newest first."
+      }
+    },
+    {
+      "name": "5. Filter Tasks by Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks?status=pending",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks"],
+          "query": [
+            {
+              "key": "status",
+              "value": "pending"
+            }
+          ]
+        },
+        "description": "Filters tasks by pending status."
+      }
+    },
+    {
+      "name": "6. Get Single Task by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "{{taskId}}"]
+        },
+        "description": "Retrieves the task using its MongoDB ObjectId."
+      }
+    },
+    {
+      "name": "7. Get Task - Invalid ID Format (400)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/invalid-id-format",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "invalid-id-format"]
+        },
+        "description": "Tests validation when ID is not a valid 24-character hexadecimal ObjectId."
+      }
+    },
+    {
+      "name": "8. Get Task - Not Found (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/60d0fe4f5311236168a109ca",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "60d0fe4f5311236168a109ca"]
+        },
+        "description": "Tests 404 response for a well-formed ObjectId that does not exist in the database."
+      }
+    },
+    {
+      "name": "9. Update Task (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Complete Week 2 Backend Assignment - UPDATED\",\n  \"description\": \"Assignment completed and tested with Postman!\",\n  \"status\": \"completed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "{{taskId}}"]
+        },
+        "description": "Updates an existing task's title, description, and status."
+      }
+    },
+    {
+      "name": "10. Delete Task (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "{{taskId}}"]
+        },
+        "description": "Deletes the task from MongoDB."
+      }
+    },
+    {
+      "name": "11. Verify Deleted Task (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tasks", "{{taskId}}"]
+        },
+        "description": "Confirms the deleted task can no longer be retrieved."
+      }
+    }
+  ]
+}
+
