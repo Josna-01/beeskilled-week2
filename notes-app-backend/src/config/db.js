@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Configure public DNS fallback to reliably resolve MongoDB Atlas SRV records
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+} catch {
+  // If DNS override not permitted by environment, fall back to default
+}
 
 /**
  * Connect to MongoDB database using Mongoose
@@ -15,4 +23,3 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
-
