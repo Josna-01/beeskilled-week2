@@ -16,6 +16,15 @@ const startServer = async () => {
       console.log(`[Server] To-Do API running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
 
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`[Server Error] Port ${PORT} is currently in use. Waiting to release or please change PORT in .env.`);
+      } else {
+        console.error(`[Server Error] ${err.message}`);
+      }
+      process.exit(1);
+    });
+
     // Graceful shutdown handlers
     process.on('unhandledRejection', (err) => {
       console.error(`[Unhandled Rejection] ${err.message}`);
@@ -33,4 +42,3 @@ const startServer = async () => {
 };
 
 startServer();
-
